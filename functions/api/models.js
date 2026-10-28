@@ -31,6 +31,7 @@ export async function onRequestGet({ env }) {
 
   const catalogModels = Array.isArray(catalog.models) ? catalog.models : [];
   const excludedKinds = /image|tts|embedding|transcrib|live|audio|computer|robotics|agent|banana/i;
+  const unavailableForNewUsers = new Set(["gemini-2.5-flash-lite"]);
   const models = catalogModels
     .filter(model => {
       const id = model?.name;
@@ -38,15 +39,14 @@ export async function onRequestGet({ env }) {
       return typeof id === "string" &&
         id.startsWith("models/gemini") &&
         canGenerate &&
+        !unavailableForNewUsers.has(id.replace(/^models\//, "")) &&
         !excludedKinds.test(`${id} ${model.displayName || ""}`);
     })
     .map(model => ({
       id: model.name.replace(/^models\//, ""),
       name: model.displayName || model.name.replace(/^models\//, ""),
     }))
-    .sort((a, b) => {
-      return a.name.localeCompare(b.name);
-    });
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const liveModels = catalogModels
     .filter(model => typeof model?.name === "string" &&

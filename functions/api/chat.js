@@ -75,6 +75,7 @@ export async function onRequestPost({ request, env }) {
   const selectedModel = (Array.isArray(catalog.models) ? catalog.models : []).find(item =>
     item?.name === `models/${model}` &&
     item?.supportedGenerationMethods?.includes("generateContent") &&
+    model !== "gemini-2.5-flash-lite" &&
     !/image|tts|embedding|transcrib|live|audio|computer|robotics|agent|banana/i.test(
       `${item.name} ${item.displayName || ""}`
     )

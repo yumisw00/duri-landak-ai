@@ -296,9 +296,12 @@
           `<option value="${escapeHTML(model.id)}">${escapeHTML(model.name)}</option>`
         ).join('');
         modelSelect.disabled = false;
-        modelSelect.value = models.some(model => model.id === previousModel)
-          ? previousModel
-          : (models.find(model => /flash-lite/i.test(model.id))?.id || models[0].id);
+        const preferred = models.find(model => /gemini-3\.5-flash-lite/i.test(model.id)) ||
+          models.find(model => /flash-lite/i.test(model.id)) ||
+          models[0];
+        modelSelect.value = previousModel === 'gemini-2.5-flash-lite'
+          ? preferred.id
+          : (models.some(model => model.id === previousModel) ? previousModel : preferred.id);
         try { localStorage.setItem(MODEL_STORAGE_KEY, modelSelect.value); } catch {}
         modelDot.classList.add('ready');
         connectionStatus.classList.remove('error');
