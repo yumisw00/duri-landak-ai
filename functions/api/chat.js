@@ -5,8 +5,8 @@ export async function onRequestPost({ request, env }) {
       headers: { "Cache-Control": "no-store" },
     });
 
-  if (!env.OPENROUTER_API_KEY) {
-    return respond({ error: "OPENROUTER_API_KEY belum dikonfigurasi." }, 503);
+  if (!env.GEMINI_API_KEY) {
+    return respond({ error: "GEMINI_API_KEY belum dikonfigurasi." }, 503);
   }
 
   let body;
@@ -17,14 +17,13 @@ export async function onRequestPost({ request, env }) {
   }
 
   const model = body?.model;
-  const isFreeModel =
+  const isGeminiModel =
     typeof model === "string" &&
     model.length <= 200 &&
-    model.includes("/") &&
-    (model === "openrouter/free" || model.endsWith(":free"));
+    model.startsWith("gemini");
 
-  if (!isFreeModel) {
-    return respond({ error: "Pilih model gratis OpenRouter yang tersedia." }, 400);
+  if (!isGeminiModel) {
+    return respond({ error: "Pilih model Gemini yang tersedia." }, 400);
   }
 
   if (
@@ -53,39 +52,77 @@ export async function onRequestPost({ request, env }) {
     });
   }
 
+  let catalogResponse;
+  try {
+    catalogResponse = await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000", {
+      headers: { "x-goog-api-key": env.GEMINI_API_KEY },
+    });
+  } catch {
+    return respond({ error: "Tidak dapat memeriksa katalog Gemini." }, 502);
+  }
+
+  if (!catalogResponse.ok) {
+    return respond({ error: "Katalog Gemini tidak dapat diakses." }, 502);
+  }
+
+  let catalog;
+  try {
+    catalog = await catalogResponse.json();
+  } catch {
+    return respond({ error: "Respons katalog Gemini tidak valid." }, 502);
+  }
+
+  const selectedModel = (Array.isArray(catalog.models) ? catalog.models : []).find(item =>
+    item?.name === `models/${model}` &&
+    item?.supportedGenerationMethods?.includes("generateContent") &&
+    !/image|tts|embedding|transcrib|live|audio|computer|robotics|agent|banana/i.test(
+      `${item.name} ${item.displayName || ""}`
+    )
+  );
+
+  if (!selectedModel) {
+    return respond({ error: "Model Gemini ini tidak tersedia untuk API key kamu." }, 400);
+  }
+
   let upstream;
   try {
-    upstream = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    upstream = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+      {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
+        "x-goog-api-key": env.GEMINI_API_KEY,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model,
-        messages: [
-          {
-            role: "system",
-            content:
-              "Namamu Duri, asisten AI yang ramah dan membantu. Jawab menggunakan bahasa yang dipakai pengguna. Jika tidak tahu, katakan dengan jujur.",
-          },
-          ...messages,
-        ],
-        max_tokens: 700,
-        temperature: 0.7,
+        systemInstruction: {
+          parts: [{
+            text: "Namamu Duri, asisten AI yang ramah dan membantu. Jawab menggunakan bahasa yang dipakai pengguna. Jika tidak tahu, katakan dengan jujur.",
+          }],
+        },
+        contents: messages.map(message => ({
+          role: message.role === "assistant" ? "model" : "user",
+          parts: [{ text: message.content }],
+        })),
+        generationConfig: {
+          maxOutputTokens: Math.min(700, selectedModel.outputTokenLimit || 700),
+        },
       }),
-    });
+      }
+    );
   } catch {
-    return respond({ error: "Tidak dapat menghubungi OpenRouter." }, 502);
+    return respond({ error: "Tidak dapat menghubungi Gemini." }, 502);
   }
 
   if (!upstream.ok) {
     const status = upstream.status === 429 ? 429 : 502;
+    let detail = null;
+    try { detail = await upstream.json(); } catch {}
     return respond(
       {
         error: upstream.status === 429
-          ? "Batas permintaan gratis tercapai. Coba lagi nanti atau pilih model gratis lain."
-          : `OpenRouter mengembalikan HTTP ${upstream.status}.`,
+          ? "Batas permintaan Gemini untuk model ini tercapai. Coba lagi nanti atau pilih model lain."
+          : (detail?.error?.message || `Gemini mengembalikan HTTP ${upstream.status}.`),
       },
       status
     );
@@ -95,12 +132,15 @@ export async function onRequestPost({ request, env }) {
   try {
     result = await upstream.json();
   } catch {
-    return respond({ error: "Respons OpenRouter tidak valid." }, 502);
+    return respond({ error: "Respons Gemini tidak valid." }, 502);
   }
 
-  const reply = result?.choices?.[0]?.message?.content;
+  const reply = result?.candidates?.[0]?.content?.parts
+    ?.filter(part => typeof part.text === "string")
+    .map(part => part.text)
+    .join("");
   if (typeof reply !== "string" || !reply.trim()) {
-    return respond({ error: "OpenRouter tidak mengembalikan jawaban teks." }, 502);
+    return respond({ error: "Gemini tidak mengembalikan jawaban teks." }, 502);
   }
 
   return respond({ reply });

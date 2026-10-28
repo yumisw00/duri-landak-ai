@@ -56,6 +56,10 @@
     .demo-label { display: flex; align-items: center; gap: 7px; color: #748077; font-size: 10px; }
     .demo-label svg { color: #8cac67; }
     .demo-label.error svg { color: #bf7758; }
+    .mode-switch { display: inline-flex; gap: 3px; padding: 3px; border: 1px solid #e4e9e2; border-radius: 999px; background: #fff; }
+    .mode-button { border: 0; border-radius: 999px; padding: 6px 9px; color: #819080; background: transparent; font-size: 9px; font-weight: 750; }
+    .mode-button.active { color: #314329; background: #e8f3dd; }
+    .mode-button:disabled { opacity: .45; cursor: default; }
     .conversation { width: min(900px, 100%); flex: 1; display: flex; flex-direction: column; min-height: 0; margin: 0 auto; padding: 26px 42px 0; }
     .messages { flex: 1; overflow: auto; padding: 8px 0 22px; scrollbar-width: thin; scrollbar-color: #d4dbd1 transparent; }
     .welcome { max-width: 620px; margin: clamp(24px, 10vh, 105px) auto 0; text-align: center; animation: rise .45s ease both; }
@@ -91,6 +95,32 @@
     .send-button:hover { background: #b8ea7b; transform: translateY(-1px); }
     .send-button:disabled { cursor: default; opacity: .55; transform: none; }
     .footnote { margin-top: 10px; color: #a2aaa2; font-size: 9px; text-align: center; }
+    .hidden { display: none !important; }
+    .live-workspace { width: min(900px, 100%); flex: 1; overflow: auto; margin: 0 auto; padding: clamp(28px, 8vh, 72px) 42px 28px; }
+    .live-card { max-width: 660px; margin: 0 auto; padding: 28px; border: 1px solid #dfe8da; border-radius: 24px; background: linear-gradient(145deg, #fff, #f3f7ed); box-shadow: var(--shadow); }
+    .live-kicker { display: flex; align-items: center; gap: 7px; color: #5b8637; font-size: 10px; letter-spacing: .12em; font-weight: 800; }
+    .live-kicker i { width: 7px; height: 7px; border-radius: 50%; background: #87bd57; box-shadow: 0 0 0 4px #e4f0d8; }
+    .live-card h2 { margin: 15px 0 7px; color: #233020; font-size: clamp(25px, 4vw, 33px); letter-spacing: -.04em; }
+    .live-card > p { margin: 0; color: #718070; font-size: 12px; line-height: 1.7; }
+    .live-controls { display: grid; grid-template-columns: minmax(0, 1fr) 122px; gap: 10px; margin-top: 23px; }
+    .live-select { width: 100%; min-width: 0; border: 1px solid #dce5d7; border-radius: 12px; padding: 11px 12px; outline: 0; color: #364638; background: #fff; font-size: 11px; }
+    .live-select:disabled { color: #8d978d; }
+    .live-button { min-height: 42px; border: 0; border-radius: 12px; color: #26381f; background: var(--green); font-size: 11px; font-weight: 800; transition: .18s ease; }
+    .live-button:hover:not(:disabled) { background: #bae97e; transform: translateY(-1px); }
+    .live-button.connected { color: #fff; background: #49613e; }
+    .live-button:disabled { cursor: wait; opacity: .62; }
+    .live-language { display: none; grid-template-columns: 100px minmax(0, 1fr); align-items: center; gap: 10px; margin-top: 10px; color: #6f7e6f; font-size: 10px; }
+    .live-language.show { display: grid; }
+    .live-status { display: flex; align-items: center; gap: 8px; margin-top: 18px; color: #6e7d6d; font-size: 10px; }
+    .live-status i { width: 8px; height: 8px; border-radius: 50%; background: #bac5b7; }
+    .live-status.active i { background: #80b54f; box-shadow: 0 0 0 5px rgba(128,181,79,.14); animation: livePulse 1.2s ease-in-out infinite; }
+    @keyframes livePulse { 50% { transform: scale(.72); opacity: .55; } }
+    .transcript { min-height: 126px; max-height: 250px; overflow: auto; margin-top: 13px; padding: 14px; border: 1px solid #e0e8dc; border-radius: 13px; background: rgba(255,255,255,.74); color: #586658; font-size: 11px; line-height: 1.65; }
+    .transcript-empty { color: #9aa49a; }
+    .transcript-line { margin: 0 0 8px; }
+    .transcript-line:last-child { margin-bottom: 0; }
+    .transcript-label { color: #4d7930; font-weight: 800; }
+    .transcript-line.model .transcript-label { color: #78623f; }
     .toast { position: absolute; z-index: 5; left: 50%; bottom: 115px; transform: translate(-50%, 10px); padding: 9px 13px; border: 1px solid #e4e9e1; border-radius: 10px; color: #58645a; background: #fff; box-shadow: 0 8px 25px rgba(27,42,31,.1); font-size: 10px; opacity: 0; pointer-events: none; transition: .2s; }
     .toast.show { transform: translate(-50%, 0); opacity: 1; }
     .mobile-menu { display: none; border: 0; color: #52604f; background: transparent; }
@@ -106,6 +136,9 @@
       .demo-label { font-size: 0; gap: 0; }
       .demo-label svg { width: 17px; height: 17px; }
       .conversation { padding: 16px 15px 0; }
+      .live-workspace { padding: 26px 15px 18px; }
+      .live-card { padding: 21px; border-radius: 19px; }
+      .live-controls { grid-template-columns: 1fr; }
       .welcome { margin-top: clamp(34px, 10vh, 82px); }
       .welcome-art { width: 64px; height: 64px; border-radius: 23px; margin-bottom: 17px; }
       .welcome p { font-size: 12px; }
@@ -120,6 +153,7 @@
       .topbar { padding: 0 10px; }
       .conversation { padding-right: 11px; padding-left: 11px; }
       .composer-hint { font-size: 8px; }
+      .mode-button { padding: 6px 7px; }
     }
   </style>
 </head>
@@ -145,9 +179,10 @@
           <button class="mobile-menu" id="mobileMenu" type="button" aria-label="Buka menu"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
           <div class="mobile-brand"><div class="brand-mark"><svg width="19" height="19" viewBox="0 0 32 32" fill="none"><path d="M16 3.2 18.2 7l4.1-2.1-.2 4.5 4.6.8-2.6 3.7 3.2 3.3-4.4 1.5.5 4.5-4.4-1.3-2.2 3.9-2.2-3.9-4.4 1.3.5-4.5-4.4-1.5 3.2-3.3-2.6-3.7 4.6-.8-.2-4.5L13.8 7 16 3.2Z" fill="currentColor"/><circle cx="16" cy="16.5" r="4.2" fill="#A9DF67"/></svg></div>DURI LANDAK AI</div>
           <span class="eyebrow">Ruang ngobrol</span>
-          <label class="model-picker" title="Pilih model gratis OpenRouter"><span class="model-dot" id="modelDot"></span><select class="model-select" id="modelSelect" aria-label="Pilih model AI gratis" disabled><option value="">Memuat katalog gratis…</option></select><svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4.5 3 3 3-3" stroke="#7C887D" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
+          <label class="model-picker" title="Pilih model Gemini"><span class="model-dot" id="modelDot"></span><select class="model-select" id="modelSelect" aria-label="Pilih model Gemini" disabled><option value="">Memuat model Gemini…</option></select><svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m3 4.5 3 3 3-3" stroke="#7C887D" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
+          <div class="mode-switch" aria-label="Pilih mode"><button class="mode-button active" id="chatMode" type="button">Chat</button><button class="mode-button" id="liveMode" type="button" disabled>Live suara</button></div>
         </div>
-        <div class="demo-label" id="connectionStatus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M5 8.2 7 10l4-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="connectionText">Memuat model gratis</span></div>
+        <div class="demo-label" id="connectionStatus"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M5 8.2 7 10l4-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="connectionText">Memuat model Gemini</span></div>
       </header>
       <section class="conversation" aria-label="Percakapan">
         <div class="messages" id="messages" aria-live="polite"></div>
@@ -157,6 +192,17 @@
             <div class="composer-tools"><div class="composer-hint"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 2.3v11.4M2.3 8h11.4M4 4l8 8m0-8-8 8" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>AI pribadi yang siap membantumu</div><button class="send-button" id="sendButton" type="submit" aria-label="Kirim pesan"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 12.8V3.2M4.1 7.1 8 3.2l3.9 3.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
           </form>
           <div class="footnote">DURI LANDAK AI bisa saja keliru. Periksa kembali informasi penting.</div>
+        </div>
+      </section>
+      <section class="live-workspace hidden" id="liveWorkspace" aria-label="Percakapan suara langsung">
+        <div class="live-card">
+          <div class="live-kicker"><i></i> GEMINI LIVE</div>
+          <h2>Ngobrol langsung dengan Duri</h2>
+          <p>Pilih model Live, lalu izinkan mikrofon. Suara dikirim langsung dari browser ke Gemini menggunakan token sementara.</p>
+          <div class="live-controls"><select class="live-select" id="liveModelSelect" aria-label="Pilih model Gemini Live" disabled><option value="">Memuat model Live…</option></select><button class="live-button" id="liveStart" type="button" disabled>Mulai suara</button></div>
+          <label class="live-language" id="liveLanguageWrap"><span>Terjemahkan ke</span><select class="live-select" id="liveLanguage"><option value="id">Indonesia</option><option value="en">English</option><option value="ja">日本語</option><option value="ko">한국어</option><option value="es">Español</option></select></label>
+          <div class="live-status" id="liveStatus"><i></i><span>Belum terhubung</span></div>
+          <div class="transcript" id="liveTranscript" aria-live="polite"><span class="transcript-empty">Transkrip percakapan akan muncul di sini.</span></div>
         </div>
       </section>
       <div class="toast" id="toast" role="status"></div>
@@ -173,10 +219,22 @@
       const modelDot = document.getElementById('modelDot');
       const connectionText = document.getElementById('connectionText');
       const connectionStatus = document.getElementById('connectionStatus');
-      const MODEL_STORAGE_KEY = 'duri-landak-ai-free-model-v1';
+      const conversationEl = document.querySelector('.conversation');
+      const liveWorkspace = document.getElementById('liveWorkspace');
+      const chatModeButton = document.getElementById('chatMode');
+      const liveModeButton = document.getElementById('liveMode');
+      const liveModelSelect = document.getElementById('liveModelSelect');
+      const liveLanguageWrap = document.getElementById('liveLanguageWrap');
+      const liveLanguage = document.getElementById('liveLanguage');
+      const liveStartButton = document.getElementById('liveStart');
+      const liveStatus = document.getElementById('liveStatus');
+      const liveTranscript = document.getElementById('liveTranscript');
+      const MODEL_STORAGE_KEY = 'duri-landak-ai-gemini-model-v1';
       let chats = readChats();
       let activeId = chats[0]?.id || null;
       let toastTimer;
+      let liveModels = [];
+      let live = { socket: null, stream: null, audioContext: null, source: null, processor: null, silentGain: null, nextAudioAt: 0, inputLine: null, outputLine: null };
 
       function readChats() {
         try { const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); return Array.isArray(saved) ? saved : []; }
@@ -235,39 +293,223 @@
         let previousModel = null;
         try { previousModel = localStorage.getItem(MODEL_STORAGE_KEY); } catch {}
         modelSelect.innerHTML = models.map(model =>
-          `<option value="${escapeHTML(model.id)}">${escapeHTML(model.name)} · Gratis</option>`
+          `<option value="${escapeHTML(model.id)}">${escapeHTML(model.name)}</option>`
         ).join('');
         modelSelect.disabled = false;
         modelSelect.value = models.some(model => model.id === previousModel)
           ? previousModel
-          : (models.some(model => model.id === 'openrouter/free')
-            ? 'openrouter/free'
-            : models[0].id);
+          : (models.find(model => /flash-lite/i.test(model.id))?.id || models[0].id);
         try { localStorage.setItem(MODEL_STORAGE_KEY, modelSelect.value); } catch {}
         modelDot.classList.add('ready');
         connectionStatus.classList.remove('error');
-        connectionText.textContent = `${models.length} model gratis OpenRouter`;
+        connectionText.textContent = `${models.length} model Gemini tersedia`;
+      }
+      function renderLiveModelOptions(models) {
+        liveModels = models;
+        if (!models.length) {
+          liveModelSelect.innerHTML = '<option value="">Tidak ada model Live pada API key ini</option>';
+          liveModelSelect.disabled = true;
+          liveModeButton.disabled = true;
+          return;
+        }
+        liveModelSelect.innerHTML = models.map(model =>
+          `<option value="${escapeHTML(model.id)}">${escapeHTML(model.name)} · ${escapeHTML(model.kind)}</option>`
+        ).join('');
+        liveModelSelect.disabled = false;
+        liveStartButton.disabled = false;
+        liveModeButton.disabled = false;
+        const preferred = models.find(model => model.kind === 'Suara langsung' && !/thinking/i.test(model.id)) || models[0];
+        liveModelSelect.value = preferred.id;
+        updateLiveLanguageControl();
       }
       async function loadModels() {
         modelSelect.disabled = true;
-        connectionText.textContent = 'Memuat model gratis';
+        connectionText.textContent = 'Memuat model Gemini';
         connectionStatus.classList.remove('error');
         try {
           const response = await fetch('/api/models', { headers: { Accept: 'application/json' } });
           const data = await response.json().catch(() => ({}));
           if (!response.ok) throw new Error(data.error || `HTTP ${response.status}`);
           if (!Array.isArray(data.models) || data.models.length === 0) {
-            throw new Error('Katalog tidak berisi model chat gratis.');
+            throw new Error('Katalog tidak berisi model Gemini untuk chat.');
           }
           renderModelOptions(data.models);
+          renderLiveModelOptions(Array.isArray(data.liveModels) ? data.liveModels : []);
         } catch (error) {
-          modelSelect.innerHTML = '<option value="">Model gratis belum tersedia</option>';
+          modelSelect.innerHTML = '<option value="">Model Gemini belum tersedia</option>';
           modelSelect.disabled = true;
-          connectionText.textContent = 'Koneksi OpenRouter belum siap';
+          connectionText.textContent = 'Koneksi Gemini belum siap';
           modelDot.classList.remove('ready');
           connectionStatus.classList.add('error');
-          showToast(error.message || 'Gagal memuat katalog model gratis.');
+          renderLiveModelOptions([]);
+          showToast(error.message || 'Gagal memuat katalog model Gemini.');
         }
+      }
+      function updateLiveLanguageControl() {
+        const selected = liveModels.find(model => model.id === liveModelSelect.value);
+        liveLanguageWrap.classList.toggle('show', /translate/i.test(`${selected?.id || ''} ${selected?.name || ''}`));
+      }
+      function setLiveStatus(message, active = false) {
+        liveStatus.classList.toggle('active', active);
+        liveStatus.querySelector('span').textContent = message;
+      }
+      function appendTranscript(role, text, reuse) {
+        if (!text) return reuse || null;
+        if (liveTranscript.querySelector('.transcript-empty')) liveTranscript.innerHTML = '';
+        const line = reuse || document.createElement('p');
+        line.className = `transcript-line ${role}`;
+        line.innerHTML = `<span class="transcript-label">${role === 'user' ? 'Kamu' : 'Duri'}:</span> <span></span>`;
+        line.querySelector('span:last-child').textContent = text;
+        if (!reuse) liveTranscript.appendChild(line);
+        liveTranscript.scrollTop = liveTranscript.scrollHeight;
+        return line;
+      }
+      function base64FromBuffer(buffer) {
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        for (let index = 0; index < bytes.length; index += 0x8000) {
+          binary += String.fromCharCode(...bytes.subarray(index, index + 0x8000));
+        }
+        return btoa(binary);
+      }
+      function bufferFromBase64(value) {
+        const binary = atob(value);
+        const bytes = new Uint8Array(binary.length);
+        for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
+        return bytes.buffer;
+      }
+      function downsampleToPcm(input, inputRate) {
+        const targetRate = 16000;
+        if (inputRate === targetRate) {
+          const direct = new Int16Array(input.length);
+          for (let index = 0; index < input.length; index += 1) direct[index] = Math.max(-1, Math.min(1, input[index])) * 0x7fff;
+          return direct.buffer;
+        }
+        const ratio = inputRate / targetRate;
+        const output = new Int16Array(Math.round(input.length / ratio));
+        let offset = 0;
+        for (let index = 0; index < output.length; index += 1) {
+          const nextOffset = Math.round((index + 1) * ratio);
+          let sum = 0;
+          let count = 0;
+          for (; offset < nextOffset && offset < input.length; offset += 1) { sum += input[offset]; count += 1; }
+          output[index] = Math.max(-1, Math.min(1, sum / (count || 1))) * 0x7fff;
+        }
+        return output.buffer;
+      }
+      function playLiveAudio(base64, mimeType = '') {
+        if (!live.audioContext || !base64) return;
+        const rateMatch = /rate=(\d+)/i.exec(mimeType);
+        const sampleRate = Number(rateMatch?.[1]) || 24000;
+        const raw = bufferFromBase64(base64);
+        const view = new DataView(raw);
+        const audioBuffer = live.audioContext.createBuffer(1, Math.floor(raw.byteLength / 2), sampleRate);
+        const channel = audioBuffer.getChannelData(0);
+        for (let index = 0; index < channel.length; index += 1) channel[index] = view.getInt16(index * 2, true) / 0x8000;
+        const source = live.audioContext.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(live.audioContext.destination);
+        const startAt = Math.max(live.audioContext.currentTime + .04, live.nextAudioAt);
+        source.start(startAt);
+        live.nextAudioAt = startAt + audioBuffer.duration;
+      }
+      async function startMicrophone() {
+        if (!live.stream || !live.socket || !live.audioContext) return;
+        await live.audioContext.resume();
+        live.source = live.audioContext.createMediaStreamSource(live.stream);
+        live.processor = live.audioContext.createScriptProcessor(4096, 1, 1);
+        live.silentGain = live.audioContext.createGain();
+        live.silentGain.gain.value = 0;
+        live.processor.onaudioprocess = event => {
+          if (live.socket?.readyState !== WebSocket.OPEN) return;
+          const pcm = downsampleToPcm(event.inputBuffer.getChannelData(0), live.audioContext.sampleRate);
+          live.socket.send(JSON.stringify({ realtimeInput: { audio: { data: base64FromBuffer(pcm), mimeType: 'audio/pcm;rate=16000' } } }));
+        };
+        live.source.connect(live.processor);
+        live.processor.connect(live.silentGain);
+        live.silentGain.connect(live.audioContext.destination);
+        setLiveStatus('Mendengarkan… bicara seperti biasa.', true);
+      }
+      function stopLive(message = 'Sesi dihentikan.') {
+        const socket = live.socket;
+        live.socket = null;
+        if (socket && socket.readyState < WebSocket.CLOSING) { socket.onclose = null; socket.close(); }
+        live.processor?.disconnect();
+        live.source?.disconnect();
+        live.silentGain?.disconnect();
+        live.stream?.getTracks().forEach(track => track.stop());
+        live.audioContext?.close();
+        live = { socket: null, stream: null, audioContext: null, source: null, processor: null, silentGain: null, nextAudioAt: 0, inputLine: null, outputLine: null };
+        liveStartButton.disabled = !liveModels.length;
+        liveStartButton.classList.remove('connected');
+        liveStartButton.textContent = 'Mulai suara';
+        setLiveStatus(message, false);
+      }
+      async function startLive() {
+        const model = liveModelSelect.value;
+        if (!model || live.socket) return;
+        if (!navigator.mediaDevices?.getUserMedia) { showToast('Browser ini tidak mendukung akses mikrofon.'); return; }
+        liveStartButton.disabled = true;
+        setLiveStatus('Membuat koneksi aman…', true);
+        try {
+          const response = await fetch('/api/live-token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ model, targetLanguage: liveLanguage.value }),
+          });
+          const session = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(session.error || `HTTP ${response.status}`);
+          live.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          await live.audioContext.resume();
+          live.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+          const endpoint = 'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContentConstrained';
+          const socket = new WebSocket(`${endpoint}?access_token=${encodeURIComponent(session.token)}`);
+          live.socket = socket;
+          socket.onopen = () => {
+            const { responseModalities, translationConfig, ...setupOptions } = session.config;
+            socket.send(JSON.stringify({ setup: {
+              model: `models/${session.model}`,
+              ...setupOptions,
+              generationConfig: { responseModalities, ...(translationConfig ? { translationConfig } : {}) },
+              systemInstruction: { parts: [{ text: 'Namamu Duri. Jadilah teman bicara yang hangat, ringkas, dan gunakan bahasa pengguna.' }] },
+            } }));
+          };
+          socket.onmessage = event => {
+            let data;
+            try { data = JSON.parse(event.data); } catch { return; }
+            if (data.setupComplete !== undefined) { startMicrophone().catch(error => stopLive(error.message)); return; }
+            const content = data.serverContent;
+            if (!content) return;
+            if (content.inputTranscription?.text) live.inputLine = appendTranscript('user', content.inputTranscription.text, live.inputLine);
+            if (content.outputTranscription?.text) live.outputLine = appendTranscript('model', content.outputTranscription.text, live.outputLine);
+            if (content.modelTurn?.parts) content.modelTurn.parts.forEach(part => {
+              if (part.inlineData?.data) playLiveAudio(part.inlineData.data, part.inlineData.mimeType);
+              if (part.text) live.outputLine = appendTranscript('model', part.text, live.outputLine);
+            });
+            if (content.turnComplete) { live.inputLine = null; live.outputLine = null; setLiveStatus('Mendengarkan… bicara seperti biasa.', true); }
+          };
+          socket.onerror = () => showToast('Koneksi Gemini Live mengalami gangguan.');
+          socket.onclose = () => { if (live.socket === socket) stopLive('Sesi Live berakhir.'); };
+          liveStartButton.classList.add('connected');
+          liveStartButton.textContent = 'Akhiri suara';
+          liveStartButton.disabled = false;
+        } catch (error) {
+          stopLive(error.message || 'Tidak dapat memulai sesi suara.');
+          showToast(error.message || 'Tidak dapat memulai sesi suara.');
+        }
+      }
+      function showChatMode() {
+        if (live.socket) stopLive('Sesi Live dihentikan.');
+        conversationEl.classList.remove('hidden');
+        liveWorkspace.classList.add('hidden');
+        chatModeButton.classList.add('active');
+        liveModeButton.classList.remove('active');
+      }
+      function showLiveMode() {
+        conversationEl.classList.add('hidden');
+        liveWorkspace.classList.remove('hidden');
+        liveModeButton.classList.add('active');
+        chatModeButton.classList.remove('active');
       }
       function newChat() {
         activeId = null;
@@ -303,7 +545,7 @@
         const value = text.trim();
         if (!value) return;
         if (!modelSelect.value) {
-          showToast('Tunggu sampai daftar model gratis berhasil dimuat.');
+          showToast('Tunggu sampai daftar model Gemini berhasil dimuat.');
           return;
         }
         addMessage('user', value);
@@ -355,6 +597,10 @@
       });
       document.getElementById('newChat').addEventListener('click', newChat);
       document.getElementById('mobileMenu').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
+      chatModeButton.addEventListener('click', showChatMode);
+      liveModeButton.addEventListener('click', showLiveMode);
+      liveModelSelect.addEventListener('change', updateLiveLanguageControl);
+      liveStartButton.addEventListener('click', () => live.socket ? stopLive() : startLive());
       modelSelect.addEventListener('change', () => {
         try { localStorage.setItem(MODEL_STORAGE_KEY, modelSelect.value); } catch {}
       });
